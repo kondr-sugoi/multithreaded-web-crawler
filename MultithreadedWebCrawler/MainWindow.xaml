@@ -1,0 +1,76 @@
+﻿<Window x:Class="MultithreadedWebCrawler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MultithreadedWebCrawler"
+        xmlns:Converters="clr-namespace:MultithreadedWebCrawler.Converters"
+        mc:Ignorable="d"
+        Title="WebCrawler" Height="350" Width="725" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBlock Text="Starting URL:" Margin="5"/>
+            <TextBox Name="URL" Margin="5" Width="200" Text="http://lostfilm.tv"/>
+
+            <TextBlock Text="Search pattern:" Margin="5"/>
+            <TextBox Name="SearchPattern" Margin="5" Width="150" Text="Some text"/>
+
+            <TextBlock Text="URL maximum count:" Margin="5"/>
+            <TextBox Name="URLMaxCount" Margin="5" Width="40" Text="20"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Width="30" Margin="5" Click="Start_Click" Name="StartButton">
+                <Image Source="Icons/Play.png"/>
+            </Button>
+            <Button Width="30" Margin="5" Click="Stop_Click" Name="StopButton" IsEnabled="False">
+                <Image Source="Icons\Stop.png"/>
+            </Button>
+
+            <TextBlock Text="Maximum threads:" Margin="5" VerticalAlignment="Center"/>
+            <TextBox Name="MaxThreads" Margin="5" Width="25" Height="20" Text="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Opacity="0.5">
+            <Image Source="Icons\Check.png" Height="10"/>
+            <TextBlock Text=" - Found  "/>
+            <Image Source="Icons\Cross.png" Height="10"/>
+            <TextBlock Text=" - Not found  "/>
+            <Image Source="Icons\NoEntry.png" Height="10"/>
+            <TextBlock Text=" - Error  "/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="3" Name="Pages" ItemsSource="{Binding Path=Scanned, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
+                  HeadersVisibility="Column" IsReadOnly="True">
+            <DataGrid.Resources>
+                <Converters:PageStatusConverter x:Key="PageStatusConverter" />
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridHyperlinkColumn Binding="{Binding URL}" Header="URL" Width="*">
+                    <DataGridHyperlinkColumn.ElementStyle>
+                        <Style>
+                            <EventSetter Event="Hyperlink.Click" Handler="Hyperlink_Click"/>
+                        </Style>
+                    </DataGridHyperlinkColumn.ElementStyle>
+                </DataGridHyperlinkColumn>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Height="12" Width="12" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <ContentPresenter Content="{Binding Status, Converter={StaticResource PageStatusConverter}}"/>
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Binding="{Binding Error}" Header="Error" Width="300"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
